@@ -17,8 +17,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         passwordTextField.delegate = self
         //ToDo: Testing purpose, need to remove below two lines
-        emailTextfield.text = "naren@gmail.com"
-        passwordTextField.text  = "P@ssw0rd1234"
+        /*emailTextfield.text = "naren@gmail.com"
+        passwordTextField.text  = "P@ssw0rd1234"*/
     }
 
     override func didReceiveMemoryWarning() {

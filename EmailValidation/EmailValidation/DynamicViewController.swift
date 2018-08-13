@@ -8,9 +8,6 @@
 
 import UIKit
 
-class DynamicImageCell : UICollectionViewCell {
-    @IBOutlet weak var imageView: UIImageView!
-}
 
 class DynamicViewController: UIViewController {
 
@@ -26,11 +23,18 @@ class DynamicViewController: UIViewController {
         super.viewDidLoad()
         //let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         //self.view.addGestureRecognizer(tapGesture)
+        self.title = "Grid Image Gallery"
         rowsTextField.text = "\(rows)"
         columnsTextField.text = "\(columns)"
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
+        self.collectionView.allowsSelection = true
         self.jsondata()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationItem.hidesBackButton = true
     }
     
     @objc func dismissKeyboard (_ sender: UITapGestureRecognizer) {
@@ -84,12 +88,17 @@ extension DynamicViewController: UICollectionViewDataSource {
 }
 
 extension DynamicViewController: UICollectionViewDelegate {
+   
+    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        print("deselected")
+        return true
+    }
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         return true
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: "imageGallerySegue", sender: indexPath)
-    }
+     }
 }
 
 extension DynamicViewController: UICollectionViewDelegateFlowLayout {
@@ -134,3 +143,6 @@ extension DynamicViewController {
     }
 }
 
+class DynamicImageCell : UICollectionViewCell {
+    @IBOutlet weak var imageView: UIImageView!
+}

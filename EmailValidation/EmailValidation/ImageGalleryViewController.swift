@@ -17,7 +17,30 @@ class ImageGalleryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageNameLabel.text = imageArray[rowIndex]["title"] as! String
-        imageView.imageFromServer(urlString: imageArray[rowIndex]["thumbnailUrl"] as! String)
+        self.title = "Image Gallery"
+        updateUI()
+    }
+    @IBAction func previousButtonAction(_ sender: UIButton) {
+        rowIndex -= 1
+        if rowIndex < 0 {
+            rowIndex = imageArray.count - 1
+        }
+        updateUI()
+    }
+    @IBAction func nextButtonAction(_ sender: UIButton) {
+        rowIndex += 1
+        if rowIndex >= imageArray.count {
+            rowIndex = 0
+        }
+        updateUI()
+    }
+    
+    func updateUI() {
+        if let titleId = imageArray[rowIndex]["id"] as? Int, let name =  imageArray[rowIndex]["title"] as? String {
+            imageNameLabel.text = "\(titleId). \(name)"
+        }
+        if let imageThumbnail = imageArray[rowIndex]["thumbnailUrl"] as? String {
+            imageView.imageFromServer(urlString: imageThumbnail)
+        }
     }
 }
