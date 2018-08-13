@@ -24,8 +24,8 @@ class DynamicViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
-        self.view.addGestureRecognizer(tapGesture)
+        //let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
+        //self.view.addGestureRecognizer(tapGesture)
         rowsTextField.text = "\(rows)"
         columnsTextField.text = "\(columns)"
         collectionView.delegate = self
@@ -45,6 +45,7 @@ class DynamicViewController: UIViewController {
     }
     
     @IBAction func okButtonAction(_ sender: UIButton) {
+        self.view.endEditing(true)
         if validateRowsAndColumns() {
             collectionView.reloadData()
         }else {
@@ -54,12 +55,23 @@ class DynamicViewController: UIViewController {
             self.present(alertController, animated: true, completion: nil)
         }
     }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "imageGallerySegue" {
+            let indexPath = sender as! IndexPath
+            let imageGalleryVC = segue.destination as! ImageGalleryViewController
+            imageGalleryVC.imageArray = imageArray
+            imageGalleryVC.rowIndex = indexPath.row
+        }
+    }
 }
 
 extension DynamicViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView,
                                  numberOfItemsInSection section: Int) -> Int {
+        if rows * columns <= imageArray.count {
+            return rows * columns
+        }
         return imageArray.count
     }
     
@@ -70,6 +82,16 @@ extension DynamicViewController: UICollectionViewDataSource {
         cell.backgroundColor = UIColor.white
         cell.imageView.imageFromServer(urlString: self.imageArray[indexPath.row]["urlImage"]!)
         return cell
+    }
+}
+
+extension DynamicViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+        print("did highlight item")
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: "imageGallerySegue", sender: indexPath)
     }
 }
 
