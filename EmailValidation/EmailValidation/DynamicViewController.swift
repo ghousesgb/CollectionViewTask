@@ -18,7 +18,7 @@ class DynamicViewController: UIViewController {
     @IBOutlet weak var columnsTextField: UITextField!
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var imageArray = [[String:String]]()
+    var imageArray = [[String:AnyObject]]()
     fileprivate var rows: Int = 2
     fileprivate var columns: Int = 2
 
@@ -28,7 +28,8 @@ class DynamicViewController: UIViewController {
         //self.view.addGestureRecognizer(tapGesture)
         rowsTextField.text = "\(rows)"
         columnsTextField.text = "\(columns)"
-        collectionView.delegate = self
+        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
         self.jsondata()
     }
     
@@ -67,40 +68,33 @@ class DynamicViewController: UIViewController {
 
 extension DynamicViewController: UICollectionViewDataSource {
     
-    func collectionView(_ collectionView: UICollectionView,
-                                 numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if rows * columns <= imageArray.count {
             return rows * columns
         }
         return imageArray.count
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                                 cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell",
-                                                      for: indexPath) as! DynamicImageCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "imageCell", for: indexPath) as! DynamicImageCell
         cell.backgroundColor = UIColor.white
-        cell.imageView.imageFromServer(urlString: self.imageArray[indexPath.row]["urlImage"]!)
+        cell.imageView.imageFromServer(urlString: self.imageArray[indexPath.row]["thumbnailUrl"]as! String)
         return cell
     }
 }
 
 extension DynamicViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
-        print("did highlight item")
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return true
     }
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: "imageGallerySegue", sender: indexPath)
     }
 }
 
-extension DynamicViewController : UICollectionViewDelegateFlowLayout {
+extension DynamicViewController: UICollectionViewDelegateFlowLayout {
     
-    func collectionView(_ collectionView: UICollectionView,
-    layout collectionViewLayout: UICollectionViewLayout,
-    sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         guard let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout else {
             return CGSize()
         }
@@ -113,7 +107,7 @@ extension DynamicViewController : UICollectionViewDelegateFlowLayout {
 
 extension DynamicViewController {
     func jsondata()  {
-        let url = URL(string : "http://www.json-generator.com/api/json/get/cfHqPHxZLm?indent=2")
+        let url = URL(string : "http://jsonplaceholder.typicode.com/photos")
         var request = URLRequest(url: url!)
         request.httpMethod="GET"
         
@@ -128,7 +122,7 @@ extension DynamicViewController {
             }
             else{
                 do{
-                    self.imageArray = try JSONSerialization.jsonObject(with: Data!, options: .mutableLeaves) as! [[String:String]]
+                    self.imageArray = try JSONSerialization.jsonObject(with: Data!, options: .mutableLeaves) as! [[String:AnyObject]]
                     self.collectionView.reloadData()
                 }
                 catch{

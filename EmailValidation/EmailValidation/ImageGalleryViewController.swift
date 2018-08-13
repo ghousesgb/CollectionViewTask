@@ -9,7 +9,7 @@
 import UIKit
 
 class ImageGalleryViewController: UIViewController {
-    var imageArray = [[String:String]]()
+    var imageArray = [[String:AnyObject]]()
     var rowIndex = 0
     
     @IBOutlet weak var imageNameLabel: UILabel!
@@ -17,7 +17,7 @@ class ImageGalleryViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageNameLabel.text = imageArray[rowIndex]["name"]
-        imageView.imageFromServer(urlString: imageArray[rowIndex]["urlImage"]!)
+        imageNameLabel.text = imageArray[rowIndex]["title"] as! String
+        imageView.imageFromServer(urlString: imageArray[rowIndex]["thumbnailUrl"] as! String)
     }
 }
